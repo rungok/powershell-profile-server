@@ -17,9 +17,12 @@ you need to manually change these settings by pressing CTRL + , in Windows Termi
 
 1. Startup -> Default profile -> <b>Powershell</b> (default: Windows Powershell)
 2. Startup -> Default terminal appliaction -> <b>Windows Terminal</b> (default: Let Windows decide)
+
 3. Defaults -> Appearance -> Text -> Font Face -> <b>Robotomono</b> (Nerd font with icon set for Oh-My-Posh)
+
 4. Defaults ->	Advanced -> Text antialiasing -> <b>ClearType</b> (important for visual quality)
-6. DONE!
+
+6. Save. DONE!
    
 ## Customize this profile
 
