@@ -12,13 +12,17 @@ irm "https://github.com/rungok/powershell-profile/raw/main/setup.ps1" | iex
 
 ## 🛠️ Fix the terminal config
 
-After running the script. That means starting the OS-included Powershell (preferably in Administrative mode), you need to manually change these settings in Windows Terminal:
+After running the script. That means starting the OS-included Powershell (preferably in Administrative mode),
+you need to manually change these settings by pressing CTRL + , in Windows Terminal:
 
-1. Startup ->  Default profile -> Powershell (default: Windows Powershell) & Default terminal appliaction -> Windows Terminal (default: Let Windows decide)
-2. Defaults -> Appearance -> Text -> Font Face -> Robotomono & Set the font size 2 lines under according to your vision handicap level (10)
-3. Defaults -> Advanced -> Text antialiasing -> ClearType
-
-
+1. Startup ->
+Default profile -> Powershell (default: Windows Powershell)
+Default terminal appliaction -> Windows Terminal (default: Let Windows decide)
+2. Defaults -> 
+Appearance -> Text -> Font Face -> Robotomono (Nerd font with icon set for Oh-My-Posh prompt and directory listings)
+Appearance -> Text -> Font Size -> 10 (Set the font size according to your vision handicap level ;-)
+3. Defaults ->
+Advanced -> Text antialiasing -> ClearType (important for visual quality)
 4. DONE!
    
 ## Customize this profile
