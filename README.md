@@ -15,15 +15,11 @@ irm "https://github.com/rungok/powershell-profile/raw/main/setup.ps1" | iex
 After running the script. That means starting the OS-included Powershell (preferably in Administrative mode),
 you need to manually change these settings by pressing CTRL + , in Windows Terminal:
 
-1. Startup ->
-Default profile -> Powershell (default: Windows Powershell)
-Default terminal appliaction -> Windows Terminal (default: Let Windows decide)
-2. Defaults -> 
-Appearance -> Text -> Font Face -> Robotomono (Nerd font with icon set for Oh-My-Posh prompt and directory listings)
-Appearance -> Text -> Font Size -> 10 (Set the font size according to your vision handicap level ;-)
-3. Defaults ->
-Advanced -> Text antialiasing -> ClearType (important for visual quality)
-4. DONE!
+1. Startup -> Default profile -> <b>Powershell</b> (default: Windows Powershell)
+2. Startup -> Default terminal appliaction -> <b>Windows Terminal</b> (default: Let Windows decide)
+3. Defaults -> Appearance -> Text -> Font Face -> <b>Robotomono</b> (Nerd font with icon set for Oh-My-Posh)
+4. Defaults ->	Advanced -> Text antialiasing -> <b>ClearType</b> (important for visual quality)
+6. DONE!
    
 ## Customize this profile
 
