@@ -123,3 +123,16 @@ try {
 catch {
     Write-Error "Failed to install zoxide. Error: $_"
 }
+
+# Install opensource Powershell
+function Update-PowerShell {
+	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+		Write-Host "PowerShell Core (pwsh) is not installed. Starting the update..." -ForegroundColor Yellow
+		Run-UpdatePowershell
+		Start-Sleep -Seconds 8 # Wait for the update to finish
+		Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
+		Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content ; Install-Config"
+		exit
+		} else { Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen }
+}
+Update-PowerShell
