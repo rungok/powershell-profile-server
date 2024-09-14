@@ -1,5 +1,5 @@
 #############################################################################################
-$tit = 'PowerShell-Profile-Server Pimp v1.7 by RUNE GOKS0R'	 		  	    #
+$tit = 'PowerShell-Profile-Server Pimp v1.8 by RUNE GOKS0R'	 		  	    #
 $githubUser = 'rungok'									    #
 $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action                 #
 #  This setup.ps1 will try to install Microsoft Windows Terminal with required compnents    #
@@ -52,12 +52,14 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 # Install opensource Powershell
 function Update-PowerShell {
 	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
-		Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -ForegroundColor Yellow
-		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
-		Start-Sleep -Seconds 8 # Wait for the update to finish
-		Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
-		Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/setup.ps1'-UseBasicParsing).Content"
-		# exit
+ 		if ($isAdmin) {
+			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -ForegroundColor Yellow
+			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
+			Start-Sleep -Seconds 8 # Wait for the update to finish
+			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
+			Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/setup.ps1'-UseBasicParsing).Content"
+			# exit
+	  		}
 		} else { 
   		Write-Host "✅ PowerShell Core (pwsh) detected. Spawning Terminal." -ForegroundColor DarkGreen
     		Start-Process wt -ArgumentList "-NoExit"
@@ -65,8 +67,6 @@ function Update-PowerShell {
     		}
 }
 Update-PowerShell
-
-
 
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
@@ -84,7 +84,56 @@ if (-not (Get-Module -ListAvailable -Name Terminal-Icons)) {
 }
 Import-Module -Name Terminal-Icons
 
-# Profile creation or update
+### Install Chocolatey if not installed and shell is started in administrative mode ####
+if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+	Write-Host ("❌ Chocolatey packet manager not installed...") -nonewline -f red
+	if ($isAdmin) {
+		Write-Host ("Trying to install...") -nonewline -f DarkGreen
+		Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Zoxide fuzzy shell will not be activated until this is done.") -f red }
+	} else {
+		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
+		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+		if (Test-Path($ChocolateyProfile)) {
+			Import-Module "$ChocolateyProfile"
+		}
+}
+
+### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+	Write-Host "✅ Zoxide detected." -ForegroundColor DarkGreen
+	Invoke-Expression (& { (zoxide init --cmd cd powershell | Out-String) })
+	Set-Alias -Name z -Value __zoxide_z -Option AllScope -Scope Global -Force
+	Set-Alias -Name zi -Value __zoxide_zi -Option AllScope -Scope Global -Force
+} else {
+	if ($isAdmin) {
+		Write-Host "❌ Zoxide command not found. Attempting to install via Chocolatey..." -nonewline -f red
+		try {
+			choco install zoxide -y
+			Invoke-Expression (& { (zoxide init powershell | Out-String) })
+			Write-Host "✅ Zoxide installed successfully. Initializing..." -ForegroundColor DarkGreen
+		} catch {
+			Write-Error "❌ Failed to install zoxide. Error: $_"
+		}
+	} else { Write-Host ("❌ Terminal must be started in elevated mode to install Zoxide. Fuzzy shell will not be activated until this is done.") -f red }
+}
+
+# Microsoft Windows Terminal Install
+if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
+	if ($isAdmin) {
+		try {
+		    choco install microsoft-windows-terminal -y
+		}
+		catch {
+		    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
+		}
+   	}
+} 
+
+###########################################################
+####### Profile creation or update if not present #########
+###########################################################
+
 if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
     try {
         # Detect Version of PowerShell & Create Profile directories if they do not exist.
@@ -376,39 +425,7 @@ function Get-Theme {
 ## Final Line to set prompt
 Get-Theme
 
-### Install Chocolatey if not installed and shell is started in administrative mode ####
-if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-	Write-Host ("❌ Chocolatey packet manager not installed...") -nonewline -f red
-	if ($isAdmin) {
-		Write-Host ("Trying to install...") -nonewline -f DarkGreen
-		Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Zoxide fuzzy shell will not be activated until this is done.") -f red }
-	} else {
-		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
-		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-		if (Test-Path($ChocolateyProfile)) {
-			Import-Module "$ChocolateyProfile"
-		}
-}
 
-### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
-if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-	Write-Host "✅ Zoxide detected." -ForegroundColor DarkGreen
-	Invoke-Expression (& { (zoxide init --cmd cd powershell | Out-String) })
-	Set-Alias -Name z -Value __zoxide_z -Option AllScope -Scope Global -Force
-	Set-Alias -Name zi -Value __zoxide_zi -Option AllScope -Scope Global -Force
-} else {
-	if ($isAdmin) {
-		Write-Host "❌ Zoxide command not found. Attempting to install via Chocolatey..." -nonewline -f red
-		try {
-			choco install zoxide -y
-			Invoke-Expression (& { (zoxide init powershell | Out-String) })
-			Write-Host "✅ Zoxide installed successfully. Initializing..." -ForegroundColor DarkGreen
-		} catch {
-			Write-Error "❌ Failed to install zoxide. Error: $_"
-		}
-	} else { Write-Host ("❌ Terminal must be started in elevated mode to install Zoxide. Fuzzy shell will not be activated until this is done.") -f red }
-}
 
 # Help Function
 function Show-Help {
