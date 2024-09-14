@@ -15,7 +15,7 @@ $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action     
 Write-Host("`n         .--------< ") -f white -nonewline
 Write-Host($tit) -f Cyan -nonewline
 Write-Host(" >---------------------.") -f white
-Write-Host("         '-------------------------------------------------------------------------------------------------'`n") -f white
+Write-Host("         '----------------------------------------------------------------------------------------------------'`n") -f white
 Write-Host("`nThis script must be run in elevated Powershell. Installing components...please wait....:") -f yellow
 
 # Ensure the script can run with elevated privileges
@@ -78,7 +78,7 @@ else {
 }
 
 # Install NuGet to ensure the other packages can be installed.
-$nugetProvider = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
+$nugetProvider = Get-PackageProvider | Select-Object Name | Where-Object Name -match NuGet
 if (-not $nugetProvider) {
     Write-Host "NuGet provider not found. Installing..."
     Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
