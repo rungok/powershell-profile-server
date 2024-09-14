@@ -137,11 +137,11 @@ function Update-PowerShell {
 		Start-Sleep -Seconds 8 # Wait for the update to finish
 		Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
 		Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/setup.ps1'-UseBasicParsing).Content"
-		exit
+		# exit
 		} else { 
-  		Write-Host "✅ PowerShell Core (pwsh) detected. Respawning in Terminal." -ForegroundColor DarkGreen
+  		Write-Host "✅ PowerShell Core (pwsh) detected. Spawning Terminal." -ForegroundColor DarkGreen
     		Start-Process wt -ArgumentList "-NoExit"
-      		exit
+      		# exit
     		}
 }
 Update-PowerShell
