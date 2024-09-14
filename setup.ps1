@@ -41,6 +41,12 @@ if (-not (Test-InternetConnection)) {
     break
 }
 
+# Set Executionpolicy for this script so we can install stuff
+$execPolicy = Get-ExecutionPolicy
+if ($execPolicy -ne "RemoteSigned") {
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
+}
+
 # Profile creation or update
 if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
     try {
@@ -92,7 +98,7 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
 # Choco install
 try {
-    Set-ExecutionPolicy RemoteSigned -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 catch {
     Write-Error "Failed to install Chocolatey. Error: $_"
