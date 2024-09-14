@@ -15,7 +15,7 @@ $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action     
 Write-Host("`n         .--------< ") -f white -nonewline
 Write-Host($tit) -f Cyan -nonewline
 Write-Host(" >---------------------.") -f white
-Write-Host("         '-----------------------------------------------------------------------------------'`n") -f white
+Write-Host("         '-------------------------------------------------------------------------------------------------'`n") -f white
 Write-Host("`nThis script must be run in elevated Powershell. Installing components...please wait....:") -f yellow
 
 # Ensure the script can run with elevated privileges
