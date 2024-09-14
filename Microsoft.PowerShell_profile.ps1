@@ -21,8 +21,11 @@ if ($execPolicy -ne "RemoteSigned") {
         Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 }
 
+# Test if Powershell is started in elevated mode for system installs that need it
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
 #opt-out of telemetry before doing anything, only if PowerShell is run as admin
-if ([bool]([System.Security.Principal.WindowsIdentity]::GetCurrent()).IsSystem) {
+if ($isAdmin) {
     [System.Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', 'true', [System.EnvironmentVariableTarget]::Machine)
 }
 
@@ -77,42 +80,37 @@ if (-not (Get-Module -ListAvailable -Name Terminal-Icons)) {
 }
 Import-Module -Name Terminal-Icons
 
+# Profile creation or update
+if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
+    try {
+        # Detect Version of PowerShell & Create Profile directories if they do not exist.
+        $profilePath = ""
+        if ($PSVersionTable.PSEdition -eq "Core") {
+            $profilePath = "$env:userprofile\Documents\Powershell"
+        }
+        elseif ($PSVersionTable.PSEdition -eq "Desktop") {
+            $profilePath = "$env:userprofile\Documents\WindowsPowerShell"
+        }
 
-function Test-CreateProfile {
-    # Create $PATH folder if not exists.
-    if (-not (Test-Path -Path (Split-Path -Path $PROFILE -Parent))) {
-        New-Item -ItemType Directory -Path (Split-Path -Path $PROFILE -Parent) -Force | Out-Null
+        if (!(Test-Path -Path $profilePath)) {
+            New-Item -Path $profilePath -ItemType "directory"
+        }
+
+        Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
+        Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch."
     }
-    # Create profile if not exists
-    if (-not (Test-Path -Path $PROFILE)) {
-        New-Item -ItemType File -Path $PROFILE | Out-Null
-        Add-Content -Path $PROFILE -Value "if (Test-Path (Join-Path -Path `$env:USERPROFILE -ChildPath `"powershell-profile-server\Microsoft.PowerShell_profile.ps1`")) { . (Join-Path -Path `$env:USERPROFILE -ChildPath `"powershell-profile-server\Microsoft.PowerShell_profile.ps1`")
-	} else {
-		iex (iwr `"https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1`").Content }"
-        Write-Host "PowerShell profile created at $PROFILE." -ForegroundColor Yellow
+    catch {
+        Write-Error "Failed to create or update the profile. Error: $_"
     }
 }
-
-# Check for Profile Updates
-function Update-Profile {
-    if (-not $global:canConnectToGitHub) {
-        Write-Host "Skipping profile update check due to GitHub.com not responding within 1 second." -ForegroundColor Yellow
-        return
-    }
-
+else {
     try {
-        $url = "https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1"
-        $oldhash = Get-FileHash $PROFILE
-        Invoke-RestMethod $url -OutFile "$env:temp/Microsoft.PowerShell_profile.ps1"
-        $newhash = Get-FileHash "$env:temp/Microsoft.PowerShell_profile.ps1"
-        if ($newhash.Hash -ne $oldhash.Hash) {
-            Copy-Item -Path "$env:temp/Microsoft.PowerShell_profile.ps1" -Destination $PROFILE -Force
-            Write-Host "Profile has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
-        }
-    } catch {
-        Write-Error "Unable to check for `$profile updates"
-    } finally {
-        Remove-Item "$env:temp/Microsoft.PowerShell_profile.ps1" -ErrorAction SilentlyContinue
+        Get-Item -Path $PROFILE | Move-Item -Destination "Microsoft.PowerShell_profile_old.ps1" -Force
+        Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
+        Write-Host "The profile @ [$PROFILE] has been created and old profile renamed to Microsoft.PowerShell_profile_old.ps1."
+    }
+    catch {
+        Write-Error "Failed to backup and update the profile. Error: $_"
     }
 }
 
@@ -128,8 +126,8 @@ function Path { $env:Path }
 function PathX { $env:Path -split ';' }
 
 ##### Aliases and functions spesific to forked powershell-profile ##### 
-# Admin Check and Prompt Customization
-$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+# Prompt Customization if started in elevated mode
+
 function prompt {
     if ($isAdmin) { "[" + (Get-Location) + "] # " } else { "[" + (Get-Location) + "] $ " }
 }
