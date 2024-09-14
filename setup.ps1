@@ -77,6 +77,19 @@ else {
     }
 }
 
+# Install NuGet to ensure the other packages can be installed.
+$nugetProvider = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
+if (-not $nugetProvider) {
+    Write-Host "NuGet provider not found. Installing..."
+    Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+    Import-PackageProvider -Name NuGet -Force
+    Write-Host "NuGet provider installed."
+} else {
+    Write-Host "NuGet provider already installed." -ForegroundColor DarkGreen
+}
+# Trust the PSGallery repository.
+Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+
 # Choco install
 try {
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
