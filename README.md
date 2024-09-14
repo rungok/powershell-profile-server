@@ -8,7 +8,7 @@ As winget is not yet supported on server 2022 by Microsoft, modules like Zoxide 
 Execute the following command in an elevated PowerShell window to install the PowerShell profile:
 
 ```
-irm "https://github.com/rungok/powershell-profile-server/raw/main/setup.ps1" | iex
+irm "https://github.com/rungok/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1" | iex
 ```
 
 ## 🛠️ Fix the terminal config
