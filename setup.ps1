@@ -6,8 +6,7 @@ $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action     
 #  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work   #
 #  And then it will insert a loginscript into where it should be placed, which is the path  #
 #  of $PROFILE. Write $PROFILE in Powershell if you wonder where it is. Usually in your     #
-#  Documents/Powershell/Microsoft.PowerShell_profile.ps1                                    #
-#  After pasting in this script in that file, add # to the line above.			    #
+#  $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1                              #
 #  Recommended requirement: Windows Terminal					 	    #
 #		https://github.com/microsoft/terminal/releases)   			    #
 #############################################################################################
@@ -64,8 +63,9 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
         }
 
         Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
-        Write-Host "The profile @ [$PROFILE] has been created."
-        Write-Host "If you want to make any personal changes or customizations, please do so at [$profilePath\Profile.ps1] as there is an updater in the installed profile which uses the hash to update the profile and will lead to loss of changes"
+        Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch."
+        Write-Host "If you want to make any personal changes or customizations, please do so at [$profilePath\Profile.ps1]"
+	Write-Host "else your subsequent installs of this script can overwrite your custom changes if you are in a Onedrive-enabled domain."
     }
     catch {
         Write-Error "Failed to create or update the profile. Error: $_"
@@ -73,7 +73,7 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
 }
 else {
     try {
-        Get-Item -Path $PROFILE | Move-Item -Destination "oldprofile.ps1" -Force
+        Get-Item -Path $PROFILE | Move-Item -Destination "Microsoft.PowerShell_profile_old.ps1" -Force
         Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
         Write-Host "The profile @ [$PROFILE] has been created and old profile removed."
         Write-Host "Please back up any persistent components of your old profile to [$HOME\Documents\PowerShell\Profile.ps1] as there is an updater in the installed profile which uses the hash to update the profile and will lead to loss of changes"
@@ -133,11 +133,11 @@ catch {
 # Install opensource Powershell
 function Update-PowerShell {
 	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
-		Write-Host "PowerShell Core (pwsh) is not installed. Starting the update..." -ForegroundColor Yellow
+		Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -ForegroundColor Yellow
 		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
 		Start-Sleep -Seconds 8 # Wait for the update to finish
 		Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
-		Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content ; Install-Config"
+		Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/setup.ps1'-UseBasicParsing).Content"
 		exit
 		} else { Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen }
 }
