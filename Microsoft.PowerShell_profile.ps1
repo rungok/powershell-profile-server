@@ -2,10 +2,12 @@
 $tit = 'PowerShell-Profile-Server Pimp v1.7 by RUNE GOKS0R'	 		  	    #
 $githubUser = 'rungok'									    #
 $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action                 #
-#  Content of this script should be put in this file (just enter that command in PS)        #
-#  Notepad $PROFILE                                                                         #
-#  After pasting in this script in that file, add # to the line above.			    #
-#  Recommended requirement: Windows Terminal						    #
+#  This setup.ps1 will try to install Microsoft Windows Terminal with required compnents    #
+#  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work   #
+#  And then it will insert a loginscript into where it should be placed, which is the path  #
+#  of $PROFILE. Write $PROFILE in Powershell if you wonder where it is. Usually in your     #
+#  $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1                              #
+#  Recommended requirement: Windows Terminal					 	    #
 #		https://github.com/microsoft/terminal/releases)   			    #
 #############################################################################################
 
@@ -25,7 +27,11 @@ if ([bool]([System.Security.Principal.WindowsIdentity]::GetCurrent()).IsSystem) 
 }
 
 # Initial GitHub.com connectivity check with 1 second timeout
-$canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet -TimeoutSeconds 1
+$canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
+
+################################################################################
+####### Test all components status and install if they are not present #########
+################################################################################
 
 # Install NuGet to ensure the other packages can be installed.
 $nugetProvider = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
@@ -52,6 +58,8 @@ function Update-PowerShell {
 		} else { Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen }
 }
 Update-PowerShell
+
+
 
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
