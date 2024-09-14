@@ -1,3 +1,23 @@
+#############################################################################################
+$tit = 'PowerShell-Profile-Server Pimp v1.7 setup.ps1-script by RUNE GOKS0R'         	    #
+$githubUser = 'rungok'									    #
+$PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action                 #
+#  This setup.ps1 will try to install Microsoft Windows Terminal with required compnents    #
+#  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work   #
+#  And then it will insert a loginscript into where it should be placed, which is the path  #
+#  of $PROFILE. Write $PROFILE in Powershell if you wonder where it is. Usually in your     #
+#  Documents/Powershell/Microsoft.PowerShell_profile.ps1                                    #
+#  After pasting in this script in that file, add # to the line above.			    #
+#  Recommended requirement: Windows Terminal					 	    #
+#		https://github.com/microsoft/terminal/releases)   			    #
+#############################################################################################
+
+Write-Host("`n         .--------< ") -f white -nonewline
+Write-Host($tit) -f Cyan -nonewline
+Write-Host(" >---------------------.") -f white
+Write-Host("         '-----------------------------------------------------------------------------------'`n") -f white
+Write-Host("`nThis script must be run in elevated Powershell. Installing components...please wait....:") -f yellow
+
 # Ensure the script can run with elevated privileges
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Warning "Please run this script as an Administrator!"
@@ -65,6 +85,14 @@ catch {
     Write-Error "Failed to install Chocolatey. Error: $_"
 }
 
+# Microsoft Windows Terminal Install
+try {
+    choco install microsoft-windows-terminal -y
+}
+catch {
+    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
+}
+
 # Terminal Icons Install
 try {
     Install-Module -Name Terminal-Icons -Repository PSGallery -Force
@@ -72,11 +100,12 @@ try {
 catch {
     Write-Error "Failed to install Terminal Icons module. Error: $_"
 }
+
 # zoxide Install
 try {
-			choco install zoxide -y
-			Invoke-Expression (& { (zoxide init powershell | Out-String) })
-			Write-Host "✅ Zoxide installed successfully. Initializing..." -ForegroundColor DarkGreen
+    choco install zoxide -y
+    Invoke-Expression (& { (zoxide init powershell | Out-String) })
+    Write-Host "✅ Zoxide installed successfully. Initializing..." -ForegroundColor DarkGreen
 }
 catch {
     Write-Error "Failed to install zoxide. Error: $_"
