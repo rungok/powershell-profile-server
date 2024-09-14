@@ -15,7 +15,6 @@ Write-Host("`n         .--------< ") -f white -nonewline
 Write-Host($tit) -f Cyan -nonewline
 Write-Host(" >---------------------.") -f white
 Write-Host("         '----------------------------------------------------------------------------------------------------'`n") -f white
-Write-Host("`nThis script must be run in elevated Powershell. Installing components...please wait....:") -f yellow
 
 # Ensure the script can run with elevated privileges
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -139,6 +138,10 @@ function Update-PowerShell {
 		Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
 		Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/setup.ps1'-UseBasicParsing).Content"
 		exit
-		} else { Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen }
+		} else { 
+  		Write-Host "✅ PowerShell Core (pwsh) detected. Respawning in Terminal." -ForegroundColor DarkGreen
+    		Start-Process wt -ArgumentList "-NoExit"
+      		exit
+    		}
 }
 Update-PowerShell
