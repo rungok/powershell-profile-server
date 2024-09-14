@@ -37,7 +37,7 @@ $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 ################################################################################
 
 # Install NuGet to ensure the other packages can be installed.
-$nugetProvider = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
+$nugetProvider = Get-PackageProvider | Select-Object Name | Where-Object Name -match NuGet
 if (-not $nugetProvider) {
     Write-Host "NuGet provider not found. Installing..."
     Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
