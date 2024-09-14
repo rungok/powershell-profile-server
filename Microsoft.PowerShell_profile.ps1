@@ -16,7 +16,7 @@ Write-Host("         '----------------------------------------------------------
 
 $execPolicy = Get-ExecutionPolicy
 if ($execPolicy -ne "RemoteSigned") {
-        Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 }
 
 #opt-out of telemetry before doing anything, only if PowerShell is run as admin
