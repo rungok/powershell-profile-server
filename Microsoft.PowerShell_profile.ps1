@@ -130,9 +130,9 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
 	    $profilePath = "$env:userprofile\Documents\WindowsPowerShell"
 	    if (!(Test-Path -Path $profilePath)) { New-Item -Path $profilePath -ItemType "directory" }
      	    Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
-            $profilePath = "$env:userprofile\Documents\Powershell"
+	    $profilePath = "$env:userprofile\Documents\Powershell"
 	    if (!(Test-Path -Path $profilePath)) { New-Item -Path $profilePath -ItemType "directory" }
-            Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
+            Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $profilePath\Microsoft.PowerShell_profile.ps1
             Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch."
     	}
     catch { Write-Error "Failed to create or update the profile. Error: $_" }
