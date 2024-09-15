@@ -137,7 +137,7 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
     	}
     catch { Write-Error "Failed to create or update the profile. Error: $_" }
 }
-else {
+function Update-Profile {
     try {
         Get-Item -Path $PROFILE | Move-Item -Destination "Microsoft.PowerShell_profile_old.ps1" -Force
         Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
