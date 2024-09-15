@@ -39,7 +39,7 @@ $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 # Install NuGet to ensure the other packages can be installed.
 $nugetProvider = Get-PackageProvider | Select-Object Name | Where-Object Name -match NuGet
 if (-not $nugetProvider) {
-    Write-Host "NuGet provider not found. Installing..." -f Yellow
+    Write-Host "NuGet provider not found. Installing..." -f Cyan
     Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
     Import-PackageProvider -Name NuGet -Force
     Write-Host "NuGet provider installed."
@@ -51,7 +51,7 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
-	Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f yellow
+	Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f Cyan
     	& ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1'))) -Confirm:$false -Name roboto-mono,cascadia-mono
 	Write-Host ("installed!") -f green	
 	Write-Host ("There is no command that can change the font for you in Powershell. Change to RobotoMono in Terminal settings.") -f green
@@ -67,7 +67,7 @@ Import-Module -Name Terminal-Icons
 
 ### Install Chocolatey if not installed and shell is started in administrative mode ####
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-	Write-Host ("❌ Chocolatey packet manager not installed...") -nonewline -f Yellow
+	Write-Host ("❌ Chocolatey packet manager not installed...") -nonewline -f Cyan
 	if ($isAdmin) {
 		Write-Host ("Trying to install...") -nonewline -f DarkGreen
 		Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -75,7 +75,7 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     		iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
   		refreshenv
-		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Some extensions will not be activated until this is done.") -f red }
+		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Some extensions will not be activated until this is done.") -f Cyan }
 	} else {
 		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
 		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
@@ -89,7 +89,7 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 	Set-Alias -Name zi -Value __zoxide_zi -Option AllScope -Scope Global -Force
 } else {
 	if ($isAdmin) {
-		Write-Host "❌ Zoxide command not found. Attempting to install via Chocolatey..." -nonewline -f Yellow
+		Write-Host "❌ Zoxide command not found. Attempting to install via Chocolatey..." -nonewline -f Cyan
 		try {
 			choco install zoxide -y
 			Invoke-Expression (& { (zoxide init powershell | Out-String) })
@@ -97,7 +97,7 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 		} catch {
 			Write-Error "❌ Failed to install zoxide. Error: $_"
 		}
-	} else { Write-Host ("❌ Terminal must be started in elevated mode to install Zoxide. Fuzzy shell will not be activated until this is done.") -f red }
+	} else { Write-Host ("❌ Terminal must be started in elevated mode to install Zoxide. Fuzzy shell will not be activated until this is done.") -f Cyan }
 }
 
 ####### Install Oh-My-Posh if not installed and shell is started in administrative mode ########
@@ -106,7 +106,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	# Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
 } else {
 	if ($isAdmin) {
-		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via Chocolatey..." -nonewline -f Yellow
+		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via Chocolatey..." -nonewline -f Cyan
 		try {
 			choco install Oh-My-Posh -y
 			Write-Host "✅ Oh-My-Posh installed successfully. Initializing..." -ForegroundColor DarkGreen
@@ -115,7 +115,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 		} catch {
 			Write-Error "❌ Failed to install Oh-My-Posh. Error: $_"
 		}
-	} else { Write-Host ("❌ Powershell must be started in elevated mode to install Oh-My-Posh. Oh-My-Posh will not be activated until this is done.") -f Red }
+	} else { Write-Host ("❌ Powershell must be started in elevated mode to install Oh-My-Posh. Oh-My-Posh will not be activated until this is done.") -f Cyan }
 }
 
 
@@ -133,7 +133,7 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
 	    $profilePath = "$env:userprofile\Documents\Powershell"
 	    if (!(Test-Path -Path $profilePath)) { New-Item -Path $profilePath -ItemType "directory" }
             Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $profilePath\Microsoft.PowerShell_profile.ps1
-            Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch."
+            Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch." -f Cyan
     	}
     catch { Write-Error "Failed to create or update the profile. Error: $_" }
 }
@@ -141,7 +141,7 @@ function Update-Profile {
     try {
         Get-Item -Path $PROFILE | Move-Item -Destination "Microsoft.PowerShell_profile_old.ps1" -Force
         Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
-        Write-Host "The profile @ [$PROFILE] has been created and old profile renamed to Microsoft.PowerShell_profile_old.ps1."
+        Write-Host "The profile @ [$PROFILE] has been created and old profile renamed to Microsoft.PowerShell_profile_old.ps1." -f Cyan
     }
     catch {
         Write-Error "Failed to backup and update the profile. Error: $_"
@@ -155,7 +155,7 @@ function Update-Profile {
 function Update-PowerShell {
 	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
  		if ($isAdmin) {
-			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Yellow
+			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Cyan
 			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
 			# Start-Sleep -Seconds 8 # Wait for the update to finish
 			# Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
@@ -173,27 +173,27 @@ Update-PowerShell
 ######################################
 if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	if ($isAdmin) {
-	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Blue
+	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Cyan
 	try {
 	    CD $Home\Downloads
-	    Write-Host "Downloading VCLibs..." -nonewline -f Blue
+	    Write-Host "Downloading VCLibs..." -nonewline -f Cyan
      	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
 	    Write-Host "installing...: " -nonewline -f Blue
 	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
      	    Write-Host "✅" -f Green
 
-     	    Write-Host "Downloading PreinstallKit..." -nonewline -f Blue
+     	    Write-Host "Downloading PreinstallKit..." -nonewline -f Cyan
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
      	    
-	    Write-Host "installing...: " -nonewline -f Blue
+	    Write-Host "installing...: " -nonewline -f Cyan
      	    Expand-Archive .\PreinstallKit.zip .
 	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
 	    Add-AppxPackage .\754329278a2d4caa964755f3410dd892.msixbundle
      	    Write-Host "✅" -f Green
      
-	    Write-Host "Downloading Terminal..." -nonewline -f Blue
+	    Write-Host "Downloading Terminal..." -nonewline -f Cyan
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-	    Write-Host "installing Terminal...: " -nonewline -f Blue
+	    Write-Host "installing Terminal...: " -nonewline -f Cyan
 	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
      	    Write-Host "✅" -f Green
 	    
@@ -465,7 +465,6 @@ function Get-Theme {
 }
 ## Final Line to set prompt
 Get-Theme
-
 
 
 # Help Function
