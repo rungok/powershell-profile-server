@@ -90,15 +90,11 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
 		Set-ExecutionPolicy Bypass -Scope Process -Force
   		[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
     		iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-            	$env:Path += ";$env:ChocolateyInstall\bin"
+		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
 		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Some extensions will not be activated until this is done.") -f red }
 	} else {
 		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
-		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-		if (Test-Path($ChocolateyProfile)) {
-			Import-Module "$ChocolateyProfile"
-		}
-  		$env:Path += ";$env:ChocolateyInstall\bin"
+		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
 }
 
 ### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
