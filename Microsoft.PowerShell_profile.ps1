@@ -52,7 +52,7 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
 	Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f yellow
-    & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1'))) -Confirm:$false -Name roboto-mono
+    	& ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1'))) -Confirm:$false -Name roboto-mono,cascadia-mono
 	Write-Host ("installed!") -f green	
 	Write-Host ("There is no command that can change the font for you in Powershell. Change to RobotoMono in Terminal settings.") -f green
 	} Else { Write-Host "✅ RobotoMono Nerd Font detected." -f DarkGreen }
