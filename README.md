@@ -1,4 +1,4 @@
-# 🎨 PowerShell Profile (Pretty PowerShell)
+# 🎨 PowerShell Profile Server Pimp (Pretty PowerShell)
 
 A stylish and functional PowerShell profile that looks and feels almost as good as a Linux terminal. This fork is tailored to work better for vanilla Winodows Server 2022.
 As winget is not yet supported on server 2022 by Microsoft, modules like Zoxide fuzzy shell are installed via Chocolatey instead.
