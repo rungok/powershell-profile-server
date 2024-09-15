@@ -58,12 +58,10 @@ function Update-PowerShell {
 			Start-Sleep -Seconds 8 # Wait for the update to finish
 			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
 			Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
-			# exit
+			exit
 	  		}
 		} else { 
   		Write-Host "✅ PowerShell Core (pwsh) detected. Spawning Terminal." -ForegroundColor DarkGreen
-    		Start-Process wt -ArgumentList "-NoExit"
-      		# exit
     		}
 }
 Update-PowerShell
@@ -160,6 +158,9 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	    Write-Host "Downloading and installing Terminal..." -nonewline -f Yellow
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
      	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+
+   	    Start-Process wt -ArgumentList "-NoExit"
+      	    exit
 	}
 	catch {
 	    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
