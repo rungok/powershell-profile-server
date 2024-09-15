@@ -123,24 +123,32 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 ######################################
 if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	if ($isAdmin) {
-	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github..." -nonewline -f Yellow
+	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Yellow
 	try {
 	    CD $Home\Downloads
-	    Write-Host "installing VCLibs..." -nonewline -f Yellow
+	    Write-Host "Downloading VCLibs..." -nonewline -f Yellow
      	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
+	    Write-Host "installing...: " -nonewline -f Yellow
 	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
+     	    Write-Host "✅"
 
-     	    Write-Host "Downloading & Installing PreinstallKit..." -nonewline -f Yellow
+     	    Write-Host "Downloading PreinstallKit..." -nonewline -f Yellow
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
-	    Expand-Archive .\PreinstallKit.zip .
+     	    
+	    Write-Host "installing...: " -nonewline -f Yellow
+     	    Expand-Archive .\PreinstallKit.zip .
 	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
 	    Add-AppxPackage .\754329278a2d4caa964755f3410dd892.msixbundle
+     	    Write-Host "✅"
      
-	    Write-Host "Downloading and installing Terminal..." -nonewline -f Yellow
+	    Write-Host "Downloading Terminal..." -nonewline -f Yellow
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-     	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-
-   	    Start-Process wt -ArgumentList "-NoExit"
+	    Write-Host "installing Terminal...: " -nonewline -f Yellow
+	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+     	    Write-Host "✅"
+	    
+     	    Write-Host "Terminal installed successfully. Initializing..." -ForegroundColor DarkGreen
+   	    Start-Process wt
       	    exit
 	}
 	catch {
