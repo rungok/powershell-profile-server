@@ -49,23 +49,6 @@ if (-not $nugetProvider) {
 # Trust the PSGallery repository.
 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
-# Install opensource Powershell
-function Update-PowerShell {
-	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
- 		if ($isAdmin) {
-			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Yellow
-			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
-			Start-Sleep -Seconds 8 # Wait for the update to finish
-			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
-			Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
-			exit
-	  		}
-		} else { 
-  		Write-Host "✅ PowerShell Core (pwsh) detected. Spawning Terminal." -ForegroundColor DarkGreen
-    		}
-}
-Update-PowerShell
-
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
 	Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f yellow
@@ -165,6 +148,23 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	}
    }
 } 
+
+# Install opensource Powershell
+function Update-PowerShell {
+	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
+ 		if ($isAdmin) {
+			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Yellow
+			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
+			Start-Sleep -Seconds 8 # Wait for the update to finish
+			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
+			Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
+			exit
+	  		}
+		} else { 
+  		Write-Host "✅ PowerShell Core (pwsh) detected. Spawning Terminal." -ForegroundColor DarkGreen
+    		}
+}
+Update-PowerShell
 
 ###########################################################
 ####### Profile creation or update if not present #########
