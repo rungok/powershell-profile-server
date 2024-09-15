@@ -79,7 +79,6 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
 	} else {
 		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
 		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
-  		refreshenv
 }
 
 ### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
@@ -104,7 +103,7 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 ####### Install Oh-My-Posh if not installed and shell is started in administrative mode ########
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	Write-Host "✅ Oh-My-Posh detected." -ForegroundColor DarkGreen
-	Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
+	# Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
 } else {
 	if ($isAdmin) {
 		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via Chocolatey..." -nonewline -f Yellow
@@ -129,16 +128,16 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	    CD $Home\Downloads
 	    Write-Host "installing VCLibs..." -nonewline -f Yellow
      	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
-	    Add-AppxPackage Microsoft.VCLibs.x86.14.00.Desktop.appx
+	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
 
      	    Write-Host "Downloading & Installing PreinstallKit..." -nonewline -f Yellow
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
 	    Expand-Archive .\PreinstallKit.zip .
 	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
-	    Add-AppxPackage .\291183aaefda4b0b99d54a1aaacaa7f6.msixbundle
+	    Add-AppxPackage .\754329278a2d4caa964755f3410dd892.msixbundle
      
 	    Write-Host "Downloading and installing Terminal..." -nonewline -f Yellow
-	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
      	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
 
    	    Start-Process wt -ArgumentList "-NoExit"
@@ -156,13 +155,13 @@ function Update-PowerShell {
  		if ($isAdmin) {
 			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Yellow
 			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
-			Start-Sleep -Seconds 8 # Wait for the update to finish
-			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
-			Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
-			exit
+			# Start-Sleep -Seconds 8 # Wait for the update to finish
+			# Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
+			#Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
+			#exit
 	  		}
 		} else { 
-  		Write-Host "✅ PowerShell Core (pwsh) detected. Spawning Terminal." -ForegroundColor DarkGreen
+  		Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen
     		}
 }
 Update-PowerShell
@@ -523,8 +522,6 @@ Use 'Show-Help' to display this help message.
 "@
 }
 
-Write-Host "Write 'Show-Help' to display overview of enhanced PowerShell commands in this setup"
-
 # Install and execute WinFetch (neofetch-port to powershell) - requires PSGallery
 if (-not(Get-InstalledScript -Name winfetch)) { Install-Script winfetch -Force }
 	# Get full path to this scripts path to execute winfetch from System Powershell folder + winfetch:
@@ -533,4 +530,5 @@ if (-not(Get-InstalledScript -Name winfetch)) { Install-Script winfetch -Force }
 	# $FetchScript = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Scripts\winfetch.ps1"))
 	# Invoke-expression -Command "$FetchScript -configpath $FetchConfig -Image $FetchImage"
 winfetch
+Write-Host "Write 'Show-Help' to display overview of enhanced PowerShell commands in this setup" -f DarkGreen
 
