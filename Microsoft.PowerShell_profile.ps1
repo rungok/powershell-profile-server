@@ -198,7 +198,7 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
      	    Write-Host "✅" -f Green
 	    
      	    Write-Host "Terminal installed successfully. Initializing..." -ForegroundColor DarkGreen
-   	    Start-Process wt
+   	    wt
       	    exit
 	}
 	catch {
