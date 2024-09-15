@@ -39,7 +39,7 @@ $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 # Install NuGet to ensure the other packages can be installed.
 $nugetProvider = Get-PackageProvider | Select-Object Name | Where-Object Name -match NuGet
 if (-not $nugetProvider) {
-    Write-Host "NuGet provider not found. Installing..."
+    Write-Host "NuGet provider not found. Installing..." -f Yellow
     Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
     Import-PackageProvider -Name NuGet -Force
     Write-Host "NuGet provider installed."
@@ -53,7 +53,7 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 function Update-PowerShell {
 	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
  		if ($isAdmin) {
-			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -ForegroundColor Yellow
+			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Yellow
 			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
 			Start-Sleep -Seconds 8 # Wait for the update to finish
 			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
@@ -70,7 +70,7 @@ Update-PowerShell
 
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
-	Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f red
+	Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f yellow
     & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1'))) -Confirm:$false -Name roboto-mono
 	Write-Host ("installed!") -f green	
 	Write-Host ("There is no command that can change the font for you in Powershell. Change to RobotoMono in Terminal settings.") -f green
@@ -86,17 +86,21 @@ Import-Module -Name Terminal-Icons
 
 ### Install Chocolatey if not installed and shell is started in administrative mode ####
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-	Write-Host ("❌ Chocolatey packet manager not installed...") -nonewline -f red
+	Write-Host ("❌ Chocolatey packet manager not installed...") -nonewline -f Yellow
 	if ($isAdmin) {
 		Write-Host ("Trying to install...") -nonewline -f DarkGreen
-		Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Zoxide fuzzy shell will not be activated until this is done.") -f red }
+		Set-ExecutionPolicy Bypass -Scope Process -Force
+  		[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    		iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+            	$env:Path += ";$env:ChocolateyInstall\bin"
+		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Some extensions will not be activated until this is done.") -f red }
 	} else {
 		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
 		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 		if (Test-Path($ChocolateyProfile)) {
 			Import-Module "$ChocolateyProfile"
 		}
+  		$env:Path += ";$env:ChocolateyInstall\bin"
 }
 
 ### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
@@ -107,7 +111,7 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 	Set-Alias -Name zi -Value __zoxide_zi -Option AllScope -Scope Global -Force
 } else {
 	if ($isAdmin) {
-		Write-Host "❌ Zoxide command not found. Attempting to install via Chocolatey..." -nonewline -f red
+		Write-Host "❌ Zoxide command not found. Attempting to install via Chocolatey..." -nonewline -f Yellow
 		try {
 			choco install zoxide -y
 			Invoke-Expression (& { (zoxide init powershell | Out-String) })
@@ -118,16 +122,49 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 	} else { Write-Host ("❌ Terminal must be started in elevated mode to install Zoxide. Fuzzy shell will not be activated until this is done.") -f red }
 }
 
-# Microsoft Windows Terminal Install
+####### Install Oh-My-Posh if not installed and shell is started in administrative mode ########
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+	Write-Host "✅ Oh-My-Posh detected." -ForegroundColor DarkGreen
+	Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
+} else {
+	if ($isAdmin) {
+		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via Chocolatey..." -nonewline -f Yellow
+		try {
+			choco install Oh-My-Posh -y
+			Write-Host "✅ Oh-My-Posh installed successfully. Initializing..." -ForegroundColor DarkGreen
+   			Invoke-Expression (& { (Oh-My-Posh init powershell | Out-String) })
+		} catch {
+			Write-Error "❌ Failed to install Oh-My-Posh. Error: $_"
+		}
+	} else { Write-Host ("❌ Powershell must be started in elevated mode to install Oh-My-Posh. Oh-My-Posh will not be activated until this is done.") -f Red }
+}
+
+######################################
+# Microsoft Windows Terminal Install # -> Must be installed manually to get around the Windows edition check on Windows Servers
+######################################
 if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	if ($isAdmin) {
-		try {
-		    choco install microsoft-windows-terminal -y
-		}
-		catch {
-		    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
-		}
-   	}
+	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github..." -nonewline -f Yellow
+	try {
+	    CD $Home\Downloads
+	    Write-Host "installing VCLibs..." -nonewline -f Yellow
+     	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
+	    Add-AppxPackage Microsoft.VCLibs.x86.14.00.Desktop.appx
+
+     	    Write-Host "Downloading & Installing PreinstallKit..." -nonewline -f Yellow
+	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip
+	    Expand-Archive .\*PreinstallKit.zip .
+	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
+	    Add-AppxPackage .\291183aaefda4b0b99d54a1aaacaa7f6.msixbundle
+     
+	    Write-Host "Downloading and installing Terminal..." -nonewline -f Yellow
+	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+     	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+	}
+	catch {
+	    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
+	}
+   }
 } 
 
 ###########################################################
