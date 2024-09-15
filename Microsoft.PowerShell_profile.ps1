@@ -111,7 +111,8 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 		try {
 			choco install Oh-My-Posh -y
 			Write-Host "✅ Oh-My-Posh installed successfully. Initializing..." -ForegroundColor DarkGreen
-   			Invoke-Expression (& { (Oh-My-Posh init powershell | Out-String) })
+   			refreshenv
+   			# Invoke-Expression (& { (Oh-My-Posh init powershell | Out-String) })
 		} catch {
 			Write-Error "❌ Failed to install Oh-My-Posh. Error: $_"
 		}
@@ -131,8 +132,8 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	    Add-AppxPackage Microsoft.VCLibs.x86.14.00.Desktop.appx
 
      	    Write-Host "Downloading & Installing PreinstallKit..." -nonewline -f Yellow
-	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip
-	    Expand-Archive .\*PreinstallKit.zip .
+	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
+	    Expand-Archive .\PreinstallKit.zip .
 	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
 	    Add-AppxPackage .\291183aaefda4b0b99d54a1aaacaa7f6.msixbundle
      
