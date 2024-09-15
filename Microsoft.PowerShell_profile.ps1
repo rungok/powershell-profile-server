@@ -118,44 +118,6 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	} else { Write-Host ("❌ Powershell must be started in elevated mode to install Oh-My-Posh. Oh-My-Posh will not be activated until this is done.") -f Red }
 }
 
-######################################
-# Microsoft Windows Terminal Install # -> Must be installed manually to get around the Windows edition check on Windows Servers
-######################################
-if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
-	if ($isAdmin) {
-	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Yellow
-	try {
-	    CD $Home\Downloads
-	    Write-Host "Downloading VCLibs..." -nonewline -f Yellow
-     	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
-	    Write-Host "installing...: " -nonewline -f Yellow
-	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
-     	    Write-Host "✅"
-
-     	    Write-Host "Downloading PreinstallKit..." -nonewline -f Yellow
-	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
-     	    
-	    Write-Host "installing...: " -nonewline -f Yellow
-     	    Expand-Archive .\PreinstallKit.zip .
-	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
-	    Add-AppxPackage .\754329278a2d4caa964755f3410dd892.msixbundle
-     	    Write-Host "✅"
-     
-	    Write-Host "Downloading Terminal..." -nonewline -f Yellow
-	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-	    Write-Host "installing Terminal...: " -nonewline -f Yellow
-	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-     	    Write-Host "✅"
-	    
-     	    Write-Host "Terminal installed successfully. Initializing..." -ForegroundColor DarkGreen
-   	    Start-Process wt
-      	    exit
-	}
-	catch {
-	    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
-	}
-   }
-} 
 
 ###########################################################
 ####### Profile creation or update if not present #########
@@ -165,23 +127,15 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
     try {
         # Detect Version of PowerShell & Create Profile directories if they do not exist.
         $profilePath = ""
-        if ($PSVersionTable.PSEdition -eq "Core") {
+	    $profilePath = "$env:userprofile\Documents\WindowsPowerShell"
+	    if (!(Test-Path -Path $profilePath)) { New-Item -Path $profilePath -ItemType "directory" }
+     	    Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
             $profilePath = "$env:userprofile\Documents\Powershell"
-        }
-        elseif ($PSVersionTable.PSEdition -eq "Desktop") {
-            $profilePath = "$env:userprofile\Documents\WindowsPowerShell"
-        }
-
-        if (!(Test-Path -Path $profilePath)) {
-            New-Item -Path $profilePath -ItemType "directory"
-        }
-
-        Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
-        Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch."
-    }
-    catch {
-        Write-Error "Failed to create or update the profile. Error: $_"
-    }
+	    if (!(Test-Path -Path $profilePath)) { New-Item -Path $profilePath -ItemType "directory" }
+            Invoke-RestMethod https://github.com/$githubUser/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
+            Write-Host "The profile @ [$PROFILE] has been created and will be executed on every Terminal/Powershell-window launch."
+    	}
+    catch { Write-Error "Failed to create or update the profile. Error: $_" }
 }
 else {
     try {
@@ -194,22 +148,65 @@ else {
     }
 }
 
-# Install opensource Powershell
+##########################################
+##### Install opensource Powershell ######
+##########################################
+
 function Update-PowerShell {
 	if (-not (Get-Command pwsh -ErrorAction SilentlyContinue)) {
  		if ($isAdmin) {
 			Write-Host "PowerShell Core (pwsh v7.x) is not installed. Starting the install..." -f Yellow
 			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
-			Start-Sleep -Seconds 8 # Wait for the update to finish
-			Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
-			Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
-			exit
+			# Start-Sleep -Seconds 8 # Wait for the update to finish
+			# Write-Host "Restarting the installation script with Powershell Core" -ForegroundColor DarkGreen
+			# Start-Process pwsh -ArgumentList "-NoExit", "-Command Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/$githubUser/powershell-profile-server/main/Microsoft.PowerShell_profile.ps1'-UseBasicParsing).Content"
+			# exit
 	  		}
 		} else { 
   		Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen
     		}
 }
 Update-PowerShell
+
+######################################
+# Microsoft Windows Terminal Install # -> Must be installed manually to get around the Windows edition check on Windows Servers
+######################################
+if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
+	if ($isAdmin) {
+	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Blue
+	try {
+	    CD $Home\Downloads
+	    Write-Host "Downloading VCLibs..." -nonewline -f Blue
+     	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
+	    Write-Host "installing...: " -nonewline -f Blue
+	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
+     	    Write-Host "✅" -f Green
+
+     	    Write-Host "Downloading PreinstallKit..." -nonewline -f Blue
+	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
+     	    
+	    Write-Host "installing...: " -nonewline -f Blue
+     	    Expand-Archive .\PreinstallKit.zip .
+	    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
+	    Add-AppxPackage .\754329278a2d4caa964755f3410dd892.msixbundle
+     	    Write-Host "✅" -f Green
+     
+	    Write-Host "Downloading Terminal..." -nonewline -f Blue
+	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+	    Write-Host "installing Terminal...: " -nonewline -f Blue
+	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+     	    Write-Host "✅" -f Green
+	    
+     	    Write-Host "Terminal installed successfully. Initializing..." -ForegroundColor DarkGreen
+   	    Start-Process wt
+      	    exit
+	}
+	catch {
+	    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
+	}
+   }
+} 
+
 
 ######################################################################
 ##### Setting aliases spesific to PowerShell-Profile-Server Pimp #####
