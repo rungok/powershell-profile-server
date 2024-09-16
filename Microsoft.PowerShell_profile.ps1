@@ -1,14 +1,14 @@
 #############################################################################################
-$tit = 'PowerShell-Profile-Server Pimp v1.9 by RUNE GOKS0R'	 		  	    #
-$githubUser = 'rungok'									    #
-$PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action                 #
-#  This setup.ps1 will try to install Microsoft Windows Terminal with required compnents    #
-#  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work   #
-#  And then it will insert a loginscript into where it should be placed, which is the path  #
-#  of $PROFILE. Write $PROFILE in Powershell if you wonder where it is. Usually in your     #
-#  $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1                              #
-#  Recommended requirement: Windows Terminal					 	    #
-#		https://github.com/microsoft/terminal/releases)   			    #
+$tit = 'PowerShell-Profile-Server Pimp v1.9 by RUNE GOKS0R'
+$githubUser = 'rungok'
+$PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action
+#  This setup.ps1 will try to install Microsoft Windows Terminal with required compnents
+#  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work
+#  And then it will insert a loginscript into where it should be placed, which is the path
+#  of $PROFILE. Write $PROFILE in Powershell if you wonder where it is. Usually in your
+#  $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
+#  Recommended requirement: Windows Terminal
+#		https://github.com/microsoft/terminal/releases)
 #############################################################################################
 
 Write-Host("`n         .--------< ") -f white -nonewline
@@ -52,8 +52,8 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 # Function to install Nerd Fonts
 function Install-NerdFonts {
     param (
-        [string]$FontName = "RobotoMono",
-        [string]$FontDisplayName = "RobotoMono Nerd Font Mono",
+        [string]$FontName = "CascadiaCode",
+        [string]$FontDisplayName = "CaskaydiaCove NF",
         [string]$Version = "3.2.1"
     )
 
@@ -83,20 +83,19 @@ function Install-NerdFonts {
             Remove-Item -Path $extractPath -Recurse -Force
             Remove-Item -Path $zipFilePath -Force
         } else {
-           Write-Host "✅ RobotoMono Nerd Font detected." -f DarkGreen
+           Write-Host "✅ ${FontName} Nerd Font detected." -f DarkGreen
         }
     }
     catch {
-        Write-Error "Failed to download or install ${FontDisplayName} font. Error: $_"
+        Write-Error "Failed to download or install ${FontName} font. Error: $_"
     }
 }
 
-
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
 Install-NerdFonts
+Install-NerdFonts -FontName "RobotoMono" -FontDisplayname "RobotoMono Nerd Font Mono"
 
-# Import Modules and External Profiles
-# Ensure Terminal-Icons module is installed before importing
+### Detect and Install Terminal-Icons module
 if (-not (Get-Module -ListAvailable -Name Terminal-Icons)) {
     Install-Module -Name Terminal-Icons -Scope CurrentUser -Force -SkipPublisherCheck
 }
