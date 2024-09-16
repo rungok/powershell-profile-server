@@ -83,7 +83,7 @@ function Install-NerdFonts {
             Remove-Item -Path $extractPath -Recurse -Force
             Remove-Item -Path $zipFilePath -Force
         } else {
-            Write-Host "Font ${FontDisplayName} already installed"
+           Write-Host "✅ RobotoMono Nerd Font detected." -f DarkGreen
         }
     }
     catch {
@@ -93,14 +93,7 @@ function Install-NerdFonts {
 
 
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
-if ($isAdmin) {
-	If (-not(Test-Path "C:\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
-		Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f Cyan
-	    	Install-NerdFonts
-		Write-Host ("installed!") -f green	
-		Write-Host ("There is no command that can change the font for you in Powershell. Change to RobotoMono in Terminal settings.") -f green
-		} Else { Write-Host "✅ RobotoMono Nerd Font detected." -f DarkGreen }
-}
+Install-NerdFonts
 
 # Import Modules and External Profiles
 # Ensure Terminal-Icons module is installed before importing
@@ -223,7 +216,7 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	    CD $Home\Downloads
 	    Write-Host "Downloading VCLibs..." -nonewline -f Cyan
      	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
-	    Write-Host "installing...: " -nonewline -f Blue
+	    Write-Host "installing...: " -nonewline -f Cyan
 	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
      	    Write-Host "✅" -f Green
 
@@ -238,11 +231,11 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
      
 	    Write-Host "Downloading Terminal..." -nonewline -f Cyan
 	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-	    Write-Host "installing Terminal...: " -nonewline -f Cyan
+	    Write-Host "installing...: " -nonewline -f Cyan
 	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
      	    Write-Host "✅" -f Green
 	    
-     	    Write-Host "Terminal installed successfully. Initializing..." -ForegroundColor DarkGreen
+     	    Write-Host "Terminal installed successfully. Initializing...:" -ForegroundColor DarkGreen
    	    wt
       	    exit
 	}
