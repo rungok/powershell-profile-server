@@ -155,7 +155,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 }
 
 #### Install Cascadia Mono (default Terminal Nerd Font)
-if (choco list cascadia) {
+If (choco list --local-only --limit-output | ConvertFrom-Csv -Delimiter '|' -Header Name, Version | Select-Object Name | Where-Object Name -match cascadiamono) {
 	Write-Host "✅ Cascadia Mono Nerd Font detected." -f DarkGreen
 } else {
  	Write-Host "❌ Cascadia Mono nerd font not installed. Attempting to install via " -nonewline -f Cyan
