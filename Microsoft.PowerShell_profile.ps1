@@ -92,8 +92,8 @@ function Install-NerdFonts {
 }
 
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
-Install-NerdFonts
-Install-NerdFonts -FontName "RobotoMono" -FontDisplayname "RobotoMono Nerd Font Mono"
+# Install-NerdFonts
+# Install-NerdFonts -FontName "RobotoMono" -FontDisplayname "RobotoMono Nerd Font Mono"
 
 ### Detect and Install Terminal-Icons module
 if (-not (Get-Module -ListAvailable -Name Terminal-Icons)) {
@@ -142,7 +142,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	# Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
 } else {
 	if ($isAdmin) {
-		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via Chocolatey..." -nonewline -f Cyan
+		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via " -nonewline -f Cyan
 		try {
 			choco install Oh-My-Posh -y
 			Write-Host "✅ Oh-My-Posh installed successfully. Initializing..." -ForegroundColor DarkGreen
@@ -152,6 +152,14 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 			Write-Error "❌ Failed to install Oh-My-Posh. Error: $_"
 		}
 	} else { Write-Host ("❌ Powershell must be started in elevated mode to install Oh-My-Posh. Oh-My-Posh will not be activated until this is done.") -f Cyan }
+}
+
+#### Install Cascadia Mono (default Terminal Nerd Font)
+if (choco list cascadia) {
+	Write-Host "✅ Cascadia Mono Nerd Font detected." -f DarkGreen
+} else {
+ 	Write-Host "❌ Cascadia Mono nerd font not installed. Attempting to install via " -nonewline -f Cyan
+ 	choco install nerd-fonts-cascadiamono -y
 }
 
 
