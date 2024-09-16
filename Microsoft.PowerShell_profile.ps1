@@ -49,11 +49,54 @@ if (-not $nugetProvider) {
 # Trust the PSGallery repository.
 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
+# Function to install Nerd Fonts
+function Install-NerdFonts {
+    param (
+        [string]$FontName = "RobotoMono",
+        [string]$FontDisplayName = "RobotoMono Nerd Font Mono",
+        [string]$Version = "3.2.1"
+    )
+
+    try {
+        [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+        $fontFamilies = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
+        if ($fontFamilies -notcontains "${FontDisplayName}") {
+            $fontZipUrl = "https://github.com/ryanoasis/nerd-fonts/releases/download/v${Version}/${FontName}.zip"
+            $zipFilePath = "$env:TEMP\${FontName}.zip"
+            $extractPath = "$env:TEMP\${FontName}"
+
+            $webClient = New-Object System.Net.WebClient
+            $webClient.DownloadFileAsync((New-Object System.Uri($fontZipUrl)), $zipFilePath)
+
+            while ($webClient.IsBusy) {
+                Start-Sleep -Seconds 2
+            }
+
+            Expand-Archive -Path $zipFilePath -DestinationPath $extractPath -Force
+            $destination = (New-Object -ComObject Shell.Application).Namespace(0x14)
+            Get-ChildItem -Path $extractPath -Recurse -Filter "*.ttf" | ForEach-Object {
+                If (-not(Test-Path "C:\Windows\Fonts\$($_.Name)")) {
+                    $destination.CopyHere($_.FullName, 0x10)
+                }
+            }
+
+            Remove-Item -Path $extractPath -Recurse -Force
+            Remove-Item -Path $zipFilePath -Force
+        } else {
+            Write-Host "Font ${FontDisplayName} already installed"
+        }
+    }
+    catch {
+        Write-Error "Failed to download or install ${FontDisplayName} font. Error: $_"
+    }
+}
+
+
 ### Install NerdFont (font with CLI icons for a bunch of stuff)
-If ($PSVersionTable.PSEdition -eq "Core") {
-	If (-not(Test-Path "$($env:LOCALAPPDATA)\Microsoft\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
+if ($isAdmin) {
+	If (-not(Test-Path "C:\Windows\Fonts\RobotoMonoNerdFontMono-Regular.ttf")) {
 		Write-Host ("NerdFont Does not exist. Trying to install...") -nonewline -f Cyan
-	    	& ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1'))) -Confirm:$false -Name roboto-mono,cascadia-mono
+	    	Install-NerdFonts
 		Write-Host ("installed!") -f green	
 		Write-Host ("There is no command that can change the font for you in Powershell. Change to RobotoMono in Terminal settings.") -f green
 		} Else { Write-Host "✅ RobotoMono Nerd Font detected." -f DarkGreen }
