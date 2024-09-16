@@ -53,7 +53,7 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 function Install-NerdFonts {
     param (
         [string]$FontName = "CascadiaMono",
-        [string]$FontDisplayName = "Cascadia Mono",
+        [string]$FontDisplayName = "CaskaydiaMono Nerd Font Mono",
         [string]$Version = "3.2.1"
     )
 
