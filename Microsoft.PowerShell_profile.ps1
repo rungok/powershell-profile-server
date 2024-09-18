@@ -573,11 +573,6 @@ Use 'Show-Help' to display this help message.
 
 # Install and execute WinFetch (neofetch-port to powershell) - requires PSGallery
 if (-not(Get-InstalledScript -Name winfetch -ErrorAction SilentlyContinue)) { Install-Script winfetch -Force }
-	# Get full path to this scripts path to execute winfetch from System Powershell folder + winfetch:
-	# $FetchImage = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "winfetch\windows-7-logo2.png"))
-	# $FetchConfig = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "winfetch\config.ps1"))
-	# $FetchScript = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Scripts\winfetch.ps1"))
-	# Invoke-expression -Command "$FetchScript -configpath $FetchConfig -Image $FetchImage"
 winfetch
 Write-Host "Write 'Show-Help' to display overview of enhanced PowerShell commands in this setup" -f DarkGreen
 
