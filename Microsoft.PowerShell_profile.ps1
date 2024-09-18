@@ -1,15 +1,14 @@
-#############################################################################################
+################################################################################################
 $tit = 'PowerShell-Profile-Server Pimp v1.9 by RUNE GOKS0R'
 $githubUser = 'rungok'
 $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action
-#  This setup.ps1 will try to install Microsoft Windows Terminal with required compnents
-#  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work
-#  And then it will insert a loginscript into where it should be placed, which is the path
+#  This script will try to install Microsoft Windows Terminal with required compnents
+#  in additions to Oh-My-Posh and other enhancments so even some Linux-commands will work.
+#  Then it will insert this script where it should be placed, which is the path
 #  of $PROFILE. Write $PROFILE in Powershell if you wonder where it is. Usually in your
 #  $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
-#  Recommended requirement: Windows Terminal
-#		https://github.com/microsoft/terminal/releases)
-#############################################################################################
+#  Change your font to RobotoMono Size 10 and set font rendering to ClearType for icons to work.
+################################################################################################
 
 Write-Host("`n         .--------< ") -f white -nonewline
 Write-Host($tit) -f Cyan -nonewline
