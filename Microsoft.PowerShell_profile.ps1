@@ -153,7 +153,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	} else { Write-Host ("❌ Powershell must be started in elevated mode to install Oh-My-Posh. Oh-My-Posh will not be activated until this is done.") -f Cyan }
 }
 
-####### Install Oh-My-Posh if not installed and shell is started in administrative mode ########
+####### Install Notepad++ if not installed and shell is started in administrative mode ########
 if (Get-Command Notepad++ -ErrorAction SilentlyContinue) {
 	Write-Host "✅ Notepad++ detected." -ForegroundColor DarkGreen
 	# Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
@@ -161,7 +161,7 @@ if (Get-Command Notepad++ -ErrorAction SilentlyContinue) {
 	if ($isAdmin) {
 		Write-Host "❌ Notepad++ not installed. Attempting to install via " -nonewline -f Cyan
 		try {
-			choco install Notepad++ -y
+			choco install notepadplusplus -y
 			Write-Host "✅ Notepad++ installed successfully. Initializing..." -ForegroundColor DarkGreen
    			refreshenv
 		} catch {
