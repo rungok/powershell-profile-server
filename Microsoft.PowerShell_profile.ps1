@@ -221,13 +221,15 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	try {
 	    CD $Home\Downloads
 	    Write-Host "Downloading VCLibs..." -nonewline -f Cyan
-     	    Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx
+     	    if (!(Test-Path -Path .\Microsoft.VCLibs.x86.14.00.Desktop.appx)) {
+	  	Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx }
 	    Write-Host "installing...: " -nonewline -f Cyan
 	    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
      	    Write-Host "✅" -f Green
 
      	    Write-Host "Downloading PreinstallKit..." -nonewline -f Cyan
-	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip
+	    if (!(Test-Path -Path .\PreinstallKit.zip)) {
+     		Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle_Windows10_PreinstallKit.zip -outfile .\PreinstallKit.zip }
      	    
 	    Write-Host "installing...: " -nonewline -f Cyan
      	    Expand-Archive .\PreinstallKit.zip .
@@ -236,7 +238,8 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
      	    Write-Host "✅" -f Green
      
 	    Write-Host "Downloading Terminal..." -nonewline -f Cyan
-	    Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
+	    if (!(Test-Path -Path .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle)) {
+     		Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle }
 	    Write-Host "installing...: " -nonewline -f Cyan
 	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
      	    Write-Host "✅" -f Green
