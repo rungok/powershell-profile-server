@@ -4,8 +4,8 @@ A stylish and functional PowerShell profile that looks and feels almost as good 
 This fork is tailored to work better for vanilla Windows Server 2022 and simplified to be only 1 file you can paste in manually if you want.
 As winget is not yet supported on server by Microsoft, modules like Zoxide fuzzy shell are installed via Chocolatey instead.
 
-Minimum server version required for Microsoft Windowes Terminal (which is crucial to benefit fully from this profile):
-<b>Windows Server 2019 version 1903/OS build 18362.x</b>
+Minimum server version required for Microsoft Windowes Terminal (which is crucial to benefit fully from this profile):</br>
+<b>Windows Server 2019 version 1903/OS build 18362.x</b></br>
 If current server 2019 kernel version is 1809, in-place upgrade to kernel 1909 or Windows 2022 is highly recommended.
 
 ## ⚡ One Line Install (Elevated PowerShell Recommended)
