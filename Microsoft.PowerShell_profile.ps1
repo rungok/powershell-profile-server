@@ -236,7 +236,7 @@ Update-PowerShell
 # Microsoft Windows Terminal Install # -> Must be installed manually to get around the Windows edition check on Windows Servers
 ######################################
 if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
-	If (($isAdmin) {
+	If ($isAdmin) {
 	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Cyan
 	If ($is2022) {
  	try {
@@ -271,10 +271,11 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
   		exit
   	    	}
 	    }
-	    catch { Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
-        } else {
-      	Start-Process pwsh
-      	exit 
+	    catch {
+     		Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
+            } else {
+      	    Start-Process pwsh
+      	    exit 
      	}
 } 
 
