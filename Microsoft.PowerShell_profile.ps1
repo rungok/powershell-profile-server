@@ -271,12 +271,12 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
   		exit
   	    	}
 	    }
-	    catch {
-     		Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
-            } else {
-      	    Start-Process pwsh
-      	    exit 
-     	}
+	    catch { Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
+        } else {
+      	Start-Process pwsh
+      	exit 
+        }
+     }
 } 
 
 
