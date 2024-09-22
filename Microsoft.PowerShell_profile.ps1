@@ -28,6 +28,9 @@ if ($isAdmin) {
     [System.Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', 'true', [System.EnvironmentVariableTarget]::Machine)
 }
 
+# Check Windows version is 2022 or lower
+If (([Environment]::OSVersion).Version.Build -lt 18362) { [bool] $is2022 = $false } else { [bool] $is2022 = $true }
+
 # Initial GitHub.com connectivity check with 1 second timeout
 $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 
@@ -233,7 +236,7 @@ Update-PowerShell
 # Microsoft Windows Terminal Install # -> Must be installed manually to get around the Windows edition check on Windows Servers
 ######################################
 if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
-	if ($isAdmin) {
+	If (($isAdmin) -and ($is2022)) {
 	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Cyan
 	try {
 	    CD $Home\Downloads
@@ -260,15 +263,19 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	    Write-Host "installing...: " -nonewline -f Cyan
 	    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
      	    Write-Host "✅" -f Green
-	    
-     	    Write-Host "Terminal installed successfully. Initializing...:" -ForegroundColor DarkGreen
-   	    if (Get-Command wt -ErrorAction SilentlyContinue) {wt} else {pwsh}
-      	    exit
+     	    
+   	    if (Get-Command wt -ErrorAction SilentlyContinue) {
+		Write-Host "Terminal installed successfully. Initializing...:" -ForegroundColor DarkGreen
+		wt
+  		exit
+  	    }
 	}
 	catch {
 	    Write-Error "Failed to install Microsoft Windows Terminal. Error: $_"
 	}
-   }
+     }
+     pwsh
+     exit     
 } 
 
 
