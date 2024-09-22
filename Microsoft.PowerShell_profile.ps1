@@ -262,7 +262,7 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
      	    Write-Host "✅" -f Green
 	    
      	    Write-Host "Terminal installed successfully. Initializing...:" -ForegroundColor DarkGreen
-   	    wt
+   	    if (Get-Command wt -ErrorAction SilentlyContinue) {wt} else {pwsh}
       	    exit
 	}
 	catch {
