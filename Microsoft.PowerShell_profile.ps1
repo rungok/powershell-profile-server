@@ -538,7 +538,7 @@ Help for $tit
 .======================================================================.
 | Path - Prints out current users Path like MS-DOS.                    |
 | PathX - Prints out current users Path like MS-DOS in listed format.  |
-| np - Notepad++ full qualified path, so use np <file.txt> to edit.    |
+| np - Notepad++ full qualified path. np $PROFILE to edit this script. |
 | vi - same as np                                                      |
 | hf - Full commandline history (also Get-FullHistory works)           |
 '----------------------------------------------------------------------'
