@@ -238,7 +238,8 @@ Update-PowerShell
 if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 	If (($isAdmin) {
 	Write-Host "❌ Microsoft Windows Terminal not found. Attempting to install required components and Terminal from Microsoft and Github...:" -f Cyan
-	If ($is2022) try {
+	If ($is2022) {
+ 	try {
 	    CD $Home\Downloads
 	    Write-Host "Downloading VCLibs..." -nonewline -f Cyan
      	    if (!(Test-Path -Path .\Microsoft.VCLibs.x86.14.00.Desktop.appx)) {
@@ -271,9 +272,10 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
   	    	}
 	    }
 	    catch { Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
-      Start-Process pwsh
-      exit 
-     }
+        } else {
+      	Start-Process pwsh
+      	exit 
+     	}
 } 
 
 
