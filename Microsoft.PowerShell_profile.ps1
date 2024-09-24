@@ -34,6 +34,14 @@ If (([Environment]::OSVersion).Version.Build -lt 18362) { [bool] $is2022 = $fals
 # Initial GitHub.com connectivity check with 1 second timeout
 $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 
+# Write out a detection sentence with √ in front of it
+function Write-Detect {
+    param ([string]$Software = "Program")
+    Write-host " " -nonewline
+    Write-host "√" -nonewline -b DarkGreen -f White
+    Write-host " $Software detected." -f Green
+}
+
 ################################################################################
 ####### Test all components status and install if they are not present #########
 ################################################################################
@@ -46,7 +54,7 @@ if (-not $nugetProvider) {
     Import-PackageProvider -Name NuGet -Force
     Write-Host "NuGet provider installed."
 } else {
-    Write-Host "✅ NuGet provider detected." -ForegroundColor DarkGreen
+    Write-Detect "NuGet provider"
 }
 # Trust the PSGallery repository.
 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
@@ -85,7 +93,7 @@ function Install-NerdFonts {
             Remove-Item -Path $extractPath -Recurse -Force
             Remove-Item -Path $zipFilePath -Force
         } else {
-           Write-Host "✅ ${FontName} Nerd Font detected." -f DarkGreen
+           Write-Detect "${FontName}"
         }
     }
     catch {
@@ -115,13 +123,13 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
   		refreshenv
 		} else { Write-Host ("❌ Terminal must be started in elevated mode to install Chocolatey. Some extensions will not be activated until this is done.") -f Cyan }
 	} else {
-		Write-Host "✅ Chocolatey packet manager detected." -f DarkGreen
+		Write-Detect "Chocolatey packet manager"
 		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
 }
 
 ### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-	Write-Host "✅ Zoxide detected." -ForegroundColor DarkGreen
+	Write-Detect "Zoxide"
 	Invoke-Expression (& { (zoxide init --cmd cd powershell | Out-String) })
 	Set-Alias -Name z -Value __zoxide_z -Option AllScope -Scope Global -Force
 	Set-Alias -Name zi -Value __zoxide_zi -Option AllScope -Scope Global -Force
@@ -131,7 +139,7 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 		try {
 			choco install zoxide -y
 			Invoke-Expression (& { (zoxide init powershell | Out-String) })
-			Write-Host "✅ Zoxide installed successfully. Initializing..." -ForegroundColor DarkGreen
+			Write-Host "Zoxide installed successfully. Initializing..." -ForegroundColor DarkGreen
 		} catch {
 			Write-Error "❌ Failed to install zoxide. Error: $_"
 		}
@@ -140,14 +148,14 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 
 ####### Install Oh-My-Posh if not installed and shell is started in administrative mode ########
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-	Write-Host "✅ Oh-My-Posh detected." -ForegroundColor DarkGreen
+	Write-Detect "Oh-My-Posh"
 	# Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
 } else {
 	if ($isAdmin) {
 		Write-Host "❌ Oh-My-Posh not installed. Attempting to install via " -nonewline -f Cyan
 		try {
 			choco install Oh-My-Posh -y
-			Write-Host "✅ Oh-My-Posh installed successfully. Initializing..." -ForegroundColor DarkGreen
+			Write-Host "Oh-My-Posh installed successfully. Initializing..." -ForegroundColor DarkGreen
    			refreshenv
    			# Invoke-Expression (& { (Oh-My-Posh init powershell | Out-String) })
 		} catch {
@@ -158,14 +166,14 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 
 ####### Install Notepad++ if not installed and shell is started in administrative mode ########
 if (Get-Command Notepad++ -ErrorAction SilentlyContinue) {
-	Write-Host "✅ Notepad++ detected." -ForegroundColor DarkGreen
+	Write-Detect "Notepad++"
 	# Invoke-Expression (& { (Oh-My-Posh init --cmd cd powershell | Out-String) })
 } else {
 	if ($isAdmin) {
 		Write-Host "❌ Notepad++ not installed. Attempting to install via " -nonewline -f Cyan
 		try {
 			choco install notepadplusplus -y
-			Write-Host "✅ Notepad++ installed successfully. Initializing..." -ForegroundColor DarkGreen
+			Write-Host "Notepad++ installed successfully. Initializing..." -ForegroundColor DarkGreen
    			refreshenv
 		} catch {
 			Write-Error "❌ Failed to install Notepad++. Error: $_"
@@ -175,7 +183,7 @@ if (Get-Command Notepad++ -ErrorAction SilentlyContinue) {
 
 #### Install Cascadia Mono (default Terminal Nerd Font)
 If (choco list --local-only --limit-output | ConvertFrom-Csv -Delimiter '|' -Header Name, Version | Select-Object Name | Where-Object Name -match robotomono) {
-	Write-Host "✅ RobotoMono Nerd Font detected." -f DarkGreen
+	Write-Detect "RobotoMono Nerd Font"
 } else {
  	Write-Host "❌ RobotoMono nerd font not installed. Attempting to install via " -nonewline -f Cyan
  	choco install nerd-fonts-robotomono -y
@@ -227,7 +235,7 @@ function Update-PowerShell {
 			# exit
 	  		}
 		} else { 
-  		Write-Host "✅ PowerShell Core (pwsh) detected." -ForegroundColor DarkGreen
+  		Write-Detect "PowerShell Core (pwsh)"
     		}
 }
 Update-PowerShell
@@ -246,7 +254,7 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 			  	Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -outfile Microsoft.VCLibs.x86.14.00.Desktop.appx }
 			    Write-Host "installing...: " -nonewline -f Cyan
 			    Add-AppxPackage .\Microsoft.VCLibs.x86.14.00.Desktop.appx
-		     	    Write-Host "✅" -f Green
+		     	    Write-host "√" -b DarkGreen -f White
 		
 		     	    Write-Host "Downloading PreinstallKit..." -nonewline -f Cyan
 			    if (!(Test-Path -Path .\PreinstallKit.zip)) {
@@ -256,14 +264,14 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 		     	    Expand-Archive .\PreinstallKit.zip .
 			    Add-AppxPackage .\Microsoft.UI.Xaml.2.8_8.2310.30001.0_x64__8wekyb3d8bbwe.appx
 			    Add-AppxPackage .\754329278a2d4caa964755f3410dd892.msixbundle
-		     	    Write-Host "✅" -f Green
+		     	    Write-host "√" -b DarkGreen -f White
 		     
 			    Write-Host "Downloading Terminal..." -nonewline -f Cyan
 			    if (!(Test-Path -Path .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle)) {
 		     		Invoke-WebRequest -Uri https://github.com/microsoft/terminal/releases/download/v1.21.2361.0/Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle -outfile .\Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle }
 			    Write-Host "installing...: " -nonewline -f Cyan
 			    Add-AppxPackage Microsoft.WindowsTerminal_1.21.2361.0_8wekyb3d8bbwe.msixbundle
-		     	    Write-Host "✅" -f Green
+		     	    Write-host "√" -b DarkGreen -f White
 		     	    
 		   	    if (Get-Command wt -ErrorAction SilentlyContinue) {
 				Write-Host "Terminal installed successfully. Initializing...:" -ForegroundColor DarkGreen
