@@ -1,5 +1,5 @@
 ################################################################################################
-$tit = 'PowerShell-Profile-Server Pimp v2.0 by RUNE GOKS0R'
+$tit = 'PowerShell-Profile-Server Pimp v2.1 by RUNE GOKS0R'
 $githubUser = 'rungok'
 $PoshTheme = 'markbull'  # Write Get-PoshThemes to see all themes in action
 #  This script will try to install Microsoft Windows Terminal with required compnents
