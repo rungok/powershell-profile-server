@@ -59,57 +59,26 @@ if (-not $nugetProvider) {
 # Trust the PSGallery repository.
 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
-# Function to install Nerd Fonts
-function Install-NerdFonts {
-    param (
-        [string]$FontName = "CascadiaMono",
-        [string]$FontDisplayName = "CaskaydiaMono Nerd Font Mono",
-        [string]$Version = "3.2.1"
-    )
-
-    try {
-        [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
-        $fontFamilies = (New-Object System.Drawing.Text.InstalledFontCollection).Families.Name
-        if ($fontFamilies -notcontains "${FontDisplayName}") {
-            $fontZipUrl = "https://github.com/ryanoasis/nerd-fonts/releases/download/v${Version}/${FontName}.zip"
-            $zipFilePath = "$env:TEMP\${FontName}.zip"
-            $extractPath = "$env:TEMP\${FontName}"
-
-            $webClient = New-Object System.Net.WebClient
-            $webClient.DownloadFileAsync((New-Object System.Uri($fontZipUrl)), $zipFilePath)
-
-            while ($webClient.IsBusy) {
-                Start-Sleep -Seconds 2
-            }
-
-            Expand-Archive -Path $zipFilePath -DestinationPath $extractPath -Force
-            $destination = (New-Object -ComObject Shell.Application).Namespace(0x14)
-            Get-ChildItem -Path $extractPath -Recurse -Filter "*.ttf" | ForEach-Object {
-                If (-not(Test-Path "C:\Windows\Fonts\$($_.Name)")) {
-                    $destination.CopyHere($_.FullName, 0x10)
-                }
-            }
-
-            Remove-Item -Path $extractPath -Recurse -Force
-            Remove-Item -Path $zipFilePath -Force
-        } else {
-           Write-Detect "${FontName}"
-        }
-    }
-    catch {
-        Write-Error "Failed to download or install ${FontName} font. Error: $_"
-    }
-}
-
-### Install NerdFont (font with CLI icons for a bunch of stuff)
-# Install-NerdFonts
-# Install-NerdFonts -FontName "RobotoMono" -FontDisplayname "RobotoMono Nerd Font Mono"
-
 ### Detect and Install Terminal-Icons module
 if (-not (Get-Module -ListAvailable -Name Terminal-Icons)) {
     Install-Module -Name Terminal-Icons -Scope CurrentUser -Force -SkipPublisherCheck
 }
 Import-Module -Name Terminal-Icons
+
+### Install .net v4.8 if server 2019 ###
+If (-not ($is2022) -and ($isAdmin)) {
+  		Write-Host "❌ Attempting to install .NET v4.8, which is required for Chocolatey packet manager...:" -f Cyan
+		 	try {
+			    CD $Home\Downloads
+			    Write-Host "Downloading VCLibs..." -nonewline -f Cyan
+		     	    if (!(Test-Path -Path .\ndp48-x86-x64-allos-enu.exe)) {
+			  	Invoke-WebRequest -Uri https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/8494001c276a4b96804cde7829c04d7f/ndp48-x86-x64-allos-enu.exe -outfile ndp48-x86-x64-allos-enu.exe }
+			    Write-Host "installing...: " -nonewline -f Cyan
+			    .\ndp48-x86-x64-allos-enu.exe /q /norestart
+		     	    Write-host "√" -b DarkGreen -f White
+			    }
+			    catch { Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
+}
 
 ### Install Chocolatey if not installed and shell is started in administrative mode ####
 if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
