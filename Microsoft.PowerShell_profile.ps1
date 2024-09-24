@@ -67,10 +67,10 @@ Import-Module -Name Terminal-Icons
 
 ### Install .net v4.8 if server 2019 ###
 If (-not ($is2022) -and ($isAdmin)) {
-  		Write-Host "❌ Attempting to install .NET v4.8, which is required for Chocolatey packet manager...:" -f Cyan
+  		Write-Host "❌ Server 2019 detected. Ensuring NET v4.8 is installed, which is required for Chocolatey packet manager..." -nonewline -f Cyan
 		 	try {
 			    CD $Home\Downloads
-			    Write-Host "Downloading VCLibs..." -nonewline -f Cyan
+			    Write-Host "Downloading .NET v4.8 runtime libraries..." -nonewline -f Cyan
 		     	    if (!(Test-Path -Path .\ndp48-x86-x64-allos-enu.exe)) {
 			  	Invoke-WebRequest -Uri https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/8494001c276a4b96804cde7829c04d7f/ndp48-x86-x64-allos-enu.exe -outfile ndp48-x86-x64-allos-enu.exe }
 			    Write-Host "installing...: " -nonewline -f Cyan
