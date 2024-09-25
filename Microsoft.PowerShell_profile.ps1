@@ -20,15 +20,15 @@ if ($execPolicy -ne "RemoteSigned") {
         Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 }
 
-# Test if Powershell is started in elevated mode for system installs that need it
+#### Test if Powershell is started in elevated mode for system installs that need it ####
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
-#opt-out of telemetry before doing anything, only if PowerShell is run as admin
+#### opt-out of telemetry before doing anything, only if PowerShell is run as admin ####
 if ($isAdmin) {
     [System.Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', 'true', [System.EnvironmentVariableTarget]::Machine)
 }
 
-# Check Windows version is 2022 or lower
+#### Check Windows version is 2022 or lower ###
 If (([Environment]::OSVersion).Version.Build -lt 18362) { [bool] $is2022 = $false } else { [bool] $is2022 = $true }
 
 # Initial GitHub.com connectivity check with 1 second timeout
@@ -45,6 +45,8 @@ function Write-Detect {
 ################################################################################
 ####### Test all components status and install if they are not present #########
 ################################################################################
+
+
 
 # Install NuGet to ensure the other packages can be installed.
 $nugetProvider = Get-PackageProvider | Select-Object Name | Where-Object Name -match NuGet
@@ -65,19 +67,15 @@ if (-not (Get-Module -ListAvailable -Name Terminal-Icons)) {
 }
 Import-Module -Name Terminal-Icons
 
-### Install .net v4.8 if server 2019 ###
-If (-not ($is2022) -and ($isAdmin)) {
-  		Write-Host "❌ Server 2019 detected. Ensuring NET v4.8 is installed, which is required for Chocolatey packet manager..." -nonewline -f Cyan
-		 	try {
-			    CD $Home\Downloads
-			    Write-Host "Downloading .NET v4.8 runtime libraries..." -nonewline -f Cyan
-		     	    if (!(Test-Path -Path .\ndp48-x86-x64-allos-enu.exe)) {
-			  	Invoke-WebRequest -Uri https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/8494001c276a4b96804cde7829c04d7f/ndp48-x86-x64-allos-enu.exe -outfile ndp48-x86-x64-allos-enu.exe }
-			    Write-Host "installing...: " -nonewline -f Cyan
-			    .\ndp48-x86-x64-allos-enu.exe /q /norestart
-		     	    Write-host "√" -b DarkGreen -f White
-			    }
-			    catch { Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
+##### Check if .net v4.8 is installed #### 
+$dotnet = (Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release) -ge 528040
+if ($dotnet) {
+    Write-Detect ".NET Framework v4.8 or higher"
+} else {
+    Write-Host "❌ .NET Framework Version 4.8 or later is not detected. Chocolatey packet manager needs .NET runtime libraries v4.8, and will try to install it automaticly." -f Cyan
+    If (-not ($is2022) -and ($isAdmin)) {
+    	Write-Host "❌ Server 2019 detected. Unfortunately .NET v4.8 upgrade on server 2019 triggers some registry fixes that requires a FULL SERVER RESTART to activate." -f Magenta
+    }
 }
 
 ### Install Chocolatey if not installed and shell is started in administrative mode ####
@@ -94,6 +92,12 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
 	} else {
 		Write-Detect "Chocolatey packet manager"
 		$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";if (Test-Path($ChocolateyProfile)) { Import-Module "$ChocolateyProfile" }
+}
+
+### Talk about .net v4.8 restart ###
+If (-not ($is2022) -and ($isAdmin)) {
+  		Write-Host "❌ You can close this window or press CTRL+C to do a FULL SERVER RESTART from this point if you like. Windows restart will not be executed by the script for obvious reasons." -f Magenta
+    		Write-Host "Rest of the script will keep whining if you don't (But you can of course schedule that restart for later if need be.)" -f Magenta
 }
 
 ### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
