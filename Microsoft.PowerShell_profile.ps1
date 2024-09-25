@@ -73,7 +73,7 @@ if ($dotnet) {
     Write-Detect ".NET Framework v4.8 or higher"
 } else {
     Write-Host "❌ .NET Framework Version 4.8 or later is not detected. Chocolatey packet manager needs .NET runtime libraries v4.8, and will try to install it automaticly." -f Cyan
-    If (-not ($is2022) -and ($isAdmin)) {
+    If ((!$is2022) -and ($isAdmin)) {
     	Write-Host "❌ Server 2019 detected. Unfortunately .NET v4.8 upgrade on server 2019 triggers some registry fixes that requires a FULL SERVER RESTART to activate." -f Magenta
     }
 }
