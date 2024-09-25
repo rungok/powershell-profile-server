@@ -498,7 +498,7 @@ $PSROptions = @{
     InLinePrediction   = $PSStyle.Foreground.BrightYellow + $PSStyle.Background.BrightBlack
     }
 }
-Set-PSReadLineOption @PSROptions
+If ($PSVersionTable.PSVersion.Major -lt 5) { Set-PSReadLineOption @PSROptions }
 Set-PSReadLineKeyHandler -Chord 'Ctrl+f' -Function ForwardWord
 Set-PSReadLineKeyHandler -Chord 'Enter' -Function ValidateAndAcceptLine
 
