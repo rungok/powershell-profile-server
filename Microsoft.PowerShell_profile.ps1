@@ -95,7 +95,7 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
 }
 
 ### Talk about .net v4.8 restart ###
-If (-not ($is2022) -and ($isAdmin) -not ($dotnet) {
+If ((!$is2022) -and ($isAdmin) -and (!$dotnet)) {
   	Write-Host "❌ You can close Powershell window or press CTRL+C and do a FULL SERVER RESTART from this point if you like." -f Magenta
 	Write-Host "As this script is server oriented, it will never force a Windows restart." -f Magenta
     	Write-Host "However, rest of the script will keep whining about missing v4.8 if you don't" -f Magenta
