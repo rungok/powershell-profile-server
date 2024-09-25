@@ -96,8 +96,17 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
 
 ### Talk about .net v4.8 restart ###
 If (-not ($is2022) -and ($isAdmin)) {
-  		Write-Host "❌ You can close this window or press CTRL+C to do a FULL SERVER RESTART from this point if you like. Windows restart will not be executed by the script for obvious reasons." -f Magenta
-    		Write-Host "Rest of the script will keep whining if you don't (But you can of course schedule that restart for later if need be.)" -f Magenta
+  	Write-Host "❌ You can close Powershell window or press CTRL+C and do a FULL SERVER RESTART from this point if you like." -f Magenta
+	Write-Host "As this script is server oriented, it will never force a Windows restart." -f Magenta
+    	Write-Host "However, rest of the script will keep whining about missing v4.8 if you don't" -f Magenta
+        Write-Host "(But you can of course schedule that restart for later if need be. F.ex. write" -f Magenta
+	Write-Host "'shutdown.exe -r -f -t 21600' in CLI where -(r)estart, -(f)orce, -(t)ime 21600 seconds is 6 hours )" -f Magenta
+	######### Message-box ##########
+        $delay = 10
+        $wshell = New-Object -ComObject Wscript.Shell
+        $wshell.Popup("Recommend a restart now to activate .NET v4.8",$delay,"Old Windows needs a reboot",0x0)
+        start-sleep 1
+        $delay -= 1
 }
 
 ### Install zoxide fuzzy shell if not installed and shell is started in administrative mode ####
