@@ -263,7 +263,9 @@ if (-not (Get-Command wt -ErrorAction SilentlyContinue)) {
 			    }
 			    catch { Write-Error "Failed to install Microsoft Windows Terminal. Error: $_" }
 	        } else {
-	      	Write-Host "❌ Microsoft Windows Terminal cannot be installed on Windows 2019, so start Powershell v7.0 instead to install rest of components:" -f Cyan
+	      	If ($PSVersionTable.PSVersion.Major -lt 5) {
+			Write-Host "❌ Microsoft Windows Terminal cannot be installed on Windows 2019, so start Powershell v7.0 instead to install rest of components:" -f Cyan
+   			}
 	        }
      	}
 } 
@@ -485,7 +487,7 @@ function pst { Get-Clipboard }
 
 
 ### Enhanced PowerShell Experience if Powershell v7+ ###
-If ($PSVersionTable.PSVersion.Major -lt 5) { 
+If ($PSVersionTable.PSVersion.Major -gt 6) { 
 	Set-PSReadLineOption -Colors @{
 	    Command = 'Yellow'
 	    Parameter = 'Green'
