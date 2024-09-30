@@ -41,7 +41,10 @@ If ($PSVersionTable.PSVersion.Major -lt 5) {
 function Write-Detect {
     param ([string]$Software = "Program")
     Write-host " " -nonewline
-    If ($PSVersionTable.PSVersion.Major -lt 5) { Write-Host "✅" -nonewline } else { Write-host "v" -nonewline -b DarkGreen -f White } 
+    If ($PSVersionTable.PSVersion.Major -lt 5) { 
+    	Write-Host "✅" -nonewline
+     } else { 
+     Write-host "v" -nonewline -b DarkGreen -f White } 
     Write-host " $Software detected." -f Green
 }
 
