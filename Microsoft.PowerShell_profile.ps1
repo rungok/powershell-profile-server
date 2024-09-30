@@ -42,7 +42,7 @@ function Write-Detect {
     param ([string]$Software = "Program")
     Write-host " " -nonewline
 	    If ($PSVersionTable.PSVersion.Major -lt 5) { 
-	    	Write-Host ("✅") -nonewline -f DarkGreen
+	    	Write-host ("✅") -nonewline -f DarkGreen
 	     } else { 
 	     	Write-host "v" -nonewline -b DarkGreen -f White
 	     } 
