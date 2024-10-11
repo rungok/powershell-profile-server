@@ -34,9 +34,6 @@ If (([Environment]::OSVersion).Version.Build -lt 18362) { [bool] $is2022 = $fals
 # Initial GitHub.com connectivity check with 1 second timeout
 $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 
-# Check Powershell-window version
-If ($PSVersionTable.PSVersion.Major -lt 5) {
-
 # Write out a detection sentence with √ in front of it
 function Write-Detect {
     param ([string]$Software = "Program")
