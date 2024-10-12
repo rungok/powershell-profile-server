@@ -38,7 +38,7 @@ $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 function Write-Detect {
     param ([string]$Software = "Program")
     Write-host " " -nonewline
-	    If ($PSVersionTable.PSVersion.Major -lt 5) { 
+	    If ($PSVersionTable.PSVersion.Major -gt 5) { 
 	    	Write-host ("✅") -nonewline -f DarkGreen
 	     } else { 
 	     	Write-host "v" -nonewline -b DarkGreen -f White
