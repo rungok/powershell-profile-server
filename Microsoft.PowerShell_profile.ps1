@@ -282,10 +282,14 @@ function hf {Get-Content (Get-PSReadlineOption).HistorySavePath}
 New-Alias Get-FullHistory hf
 function Path { $env:Path }
 function PathX { $env:Path -split ';' }
+function env {Get-ChildItem env:}
 
-##### Aliases and functions spesific to forked powershell-profile ##### 
+
+#########################################################################
+##### Aliases and functions spesific from forked powershell-profile ##### 
+#########################################################################
+
 # Prompt Customization if started in elevated mode
-
 function prompt {
     if ($isAdmin) { "[" + (Get-Location) + "] # " } else { "[" + (Get-Location) + "] $ " }
 }
@@ -543,6 +547,7 @@ Help for $tit
 | np - Notepad++ full qualified path. np $PROFILE to edit this script. |
 | vi - same as np                                                      |
 | hf - Full commandline history (also Get-FullHistory works)           |
+| env - Prints out all environment variables (Get-ChildItam env:)      |
 '----------------------------------------------------------------------'
 
 ---------------------- original commands from forked "powershell-profile" ---------------------------------------------
