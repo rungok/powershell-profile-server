@@ -598,6 +598,7 @@ Use 'Show-Help' to display this help message.
 }
 
 # Install and execute WinFetch (neofetch-port to powershell) - requires PSGallery
+Write-host "`e[1F" -nonewline
 if (-not(Get-InstalledScript -Name winfetch -ErrorAction SilentlyContinue)) { Install-Script winfetch -Force }
 winfetch
 Write-Host "Write 'Show-Help' to display overview of enhanced PowerShell commands in this setup" -f DarkGreen
