@@ -11,7 +11,7 @@ This script works 95% on Windows 2019, but 2022 is highly recommended as it will
 Execute the following command in an elevated PowerShell window to install the PowerShell profile:
 
 ```
-irm "https://github.com/rungok/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1" | iex
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;irm "https://github.com/rungok/powershell-profile-server/raw/main/Microsoft.PowerShell_profile.ps1" | iex
 ```
 
 ## 🛠️ Fix the terminal config
