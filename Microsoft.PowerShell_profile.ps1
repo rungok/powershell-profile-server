@@ -38,11 +38,11 @@ $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet
 function Write-Detect {
     param ([string]$Software = "Program")
     Write-host " " -nonewline
-	    If (($PSVersionTable.PSVersion.Major -gt 6) -and ($is2022)) { 
-	    	Write-host ("✅") -nonewline -f DarkGreen
-	     } else { Write-host "v" -nonewline -b DarkGreen -f White } 
+    If (($PSVersionTable.PSVersion.Major -gt 6) -and ($is2022)) { 
+	Write-host ("✅") -nonewline -f DarkGreen
+	} else { Write-host "v" -nonewline -b DarkGreen -f White } 
     Write-host " $Software detected.                     "  -f Green
-	Write-host "`e[1F" -nonewline
+    If (($PSVersionTable.PSVersion.Major -gt 6) { Write-host "`e[1F" -nonewline }
 }
 
 ################################################################################
