@@ -42,7 +42,7 @@ function Write-Detect {
 	Write-host ("✅") -nonewline -f DarkGreen
 	} else { Write-host "v" -nonewline -b DarkGreen -f White } 
     Write-host " $Software detected.                     "  -f Green
-    If (($PSVersionTable.PSVersion.Major -gt 6) { Write-host "`e[1F" -nonewline }
+    If ($PSVersionTable.PSVersion.Major -gt 6) { Write-host "`e[1F" -nonewline }
 }
 
 ################################################################################
